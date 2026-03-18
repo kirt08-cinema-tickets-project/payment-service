@@ -1,0 +1,6 @@
+.env
+.env.development.local
+.env.production.local
+.vscode/
+__pycache__/
+.ruff_cache/
