@@ -1,0 +1,15 @@
+services:
+    payment-service:
+        container_name: payment-service
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile
+        env_file:
+            - .env.production.local
+        networks:
+            - kirt08
+
+networks:
+    kirt08:
+        external: true
