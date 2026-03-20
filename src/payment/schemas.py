@@ -5,6 +5,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from src.core.db.models.payment import PaymentStatus
 from src.core.db.models.paymentmethod import PaymentMethodStatusEnum
 
+from src.shared.schemas import RefundDataBase
+
+
 class SeatType(BaseModel):
     seat_id: str
     price: int
@@ -16,19 +19,6 @@ class CreatePaymentRequestDTO(BaseModel):
     seats: list[SeatType]
     payment_method_id: str | None = Field(default=None)
     save_payment_method: bool
-
-
-class PaymentDataBase(BaseModel):
-    model_config = ConfigDict(
-        from_attributes=True
-    )
-
-    id: uuid.UUID
-    amount: int
-    status: PaymentStatus
-    provider_id: str | None
-    payment_metadata: str | None
-    user_id: str
 
 
 class ProcessPaymentEventRequestDTO(BaseModel):

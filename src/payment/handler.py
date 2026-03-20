@@ -42,6 +42,7 @@ class PaymentHandler:
             transaction = await service_create_payment(
                 amount = 1000,
                 user_id = data.user_id,
+                booking_id="123456",
                 session = session 
             )
 
@@ -77,7 +78,7 @@ class PaymentHandler:
             params.save_payment_method = data.save_payment_method
 
         payment = await self._yookassa_client.payments.create_payment(params)
-        print(payment)
+        print(f"{payment}=")
 
         async with self._db.session() as session:
             await service_update_payment(

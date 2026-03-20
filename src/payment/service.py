@@ -1,23 +1,31 @@
 import uuid
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import and_, select, update, delete
 from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.db.models.payment import PaymentsORM, PaymentStatus
 from src.core.db.models.paymentmethod import PaymentMethodsORM, PaymentMethodStatusEnum
 
-from src.payment.schemas import PaymentDataBase, PaymentMethodDatabase, PaymentMethodBase
+from src.shared.schemas import PaymentDataBase
+
+from src.payment.schemas import PaymentMethodDatabase, PaymentMethodBase
 from src.payment.exceptions import (
     PaymentNotFoundException,
     MultiplePaymentsFoundException,
 )
 
 
-async def service_create_payment(amount: int, user_id: str, session: AsyncSession) -> PaymentDataBase:
+async def service_create_payment(
+        amount: int,
+        user_id: str,
+        booking_id: str,
+        session: AsyncSession
+) -> PaymentDataBase:
     new_payment = PaymentsORM(
         amount = amount,
-        user_id = user_id
+        user_id = user_id,
+        booking_id = booking_id
     )
     session.add(new_payment)
     await session.commit()
@@ -49,6 +57,39 @@ async def service_find_payment_by_id(id: uuid.UUID | str, session: AsyncSession)
     except MultipleResultsFound:
         raise MultiplePaymentsFoundException()
     
+    data_dto = PaymentDataBase.model_validate(data_orm)
+    return data_dto
+
+
+async def service_find_payment_by_booking_id(booking_id: str, session: AsyncSession) -> PaymentDataBase | None:
+    data_orm = (await session.execute(
+        select(PaymentsORM)
+        .where(
+            and_(
+                PaymentsORM.booking_id == booking_id,
+                PaymentsORM.status != PaymentStatus.refunded)
+            )
+        .limit(1)
+    )).scalar_one_or_none()
+
+    if not data_orm:
+        return None
+
+    data_dto = PaymentDataBase.model_validate(data_orm)
+    return data_dto
+
+
+async def service_mark_payment_refunded(payment_id: str, session: AsyncSession) -> PaymentDataBase:
+    data_orm = (await session.execute(
+        update(PaymentsORM)
+        .where(PaymentsORM.id == payment_id)
+        .values(
+            status = PaymentStatus.refunded
+        )
+        .returning(PaymentsORM)
+    )).scalar_one()
+
+    await session.commit()
     data_dto = PaymentDataBase.model_validate(data_orm)
     return data_dto
 

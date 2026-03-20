@@ -25,6 +25,7 @@ if config.config_file_name is not None:
 from src.core.db.models.basemodel import Base
 from src.core.db.models.payment import PaymentsORM
 from src.core.db.models.paymentmethod import PaymentMethodsORM
+from src.core.db.models.refund import RefundORM
 target_metadata = Base.metadata
 
 from src.core.config import settings

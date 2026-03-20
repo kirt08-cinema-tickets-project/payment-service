@@ -2,19 +2,20 @@ from aioyookassa import YooKassa
 
 from kirt08_contracts.payment import payment_pb2_grpc, payment_pb2
 
-from src.payment import PaymentHandler
-
 from src.core.db import db
 from src.core.grpc.mapper import PaymentMapper
+from src.core.grpc.exceptions import grpc_exception_handler_class
+
+from src.payment import PaymentHandler
 
 
+@grpc_exception_handler_class
 class gRPC_Payments_Server(payment_pb2_grpc.PaymentServiceServicer):
     def __init__(self, yookassa_client: YooKassa):
         self._payment_handler = PaymentHandler(
             db = db,
             yookassa_client = yookassa_client
         )
-
 
     async def CreatePayment(self, request, context):
         data_dto = PaymentMapper.grpc_creation_to_dto(data = request)
