@@ -10,10 +10,11 @@ from src.refund import RefundHandler
 
 @grpc_exception_handler_class
 class gRPC_Refund_Server(refund_pb2_grpc.RefundServiceServicer):
-    def __init__(self, yookassa_client: YooKassa):
+    def __init__(self, yookassa_client: YooKassa, booking_client):
         self._refund_handler = RefundHandler(
             db = db,
-            yookassa_client = yookassa_client
+            yookassa_client = yookassa_client,
+            booking_client = booking_client
         )
 
     async def CreateRefund(self, request, context):

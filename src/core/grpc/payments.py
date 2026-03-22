@@ -11,11 +11,12 @@ from src.payment import PaymentHandler
 
 @grpc_exception_handler_class
 class gRPC_Payments_Server(payment_pb2_grpc.PaymentServiceServicer):
-    def __init__(self, yookassa_client: YooKassa):
+    def __init__(self, yookassa_client: YooKassa, booking_client):
         self._payment_handler = PaymentHandler(
-            db = db,
-            yookassa_client = yookassa_client
-        )
+                    db = db,
+                    yookassa_client = yookassa_client,
+                    booking_client = booking_client
+                )
 
     async def CreatePayment(self, request, context):
         data_dto = PaymentMapper.grpc_creation_to_dto(data = request)
@@ -23,6 +24,7 @@ class gRPC_Payments_Server(payment_pb2_grpc.PaymentServiceServicer):
         response = payment_pb2.CreatePaymentResponse(url = url)
         return response
     
+
     async def ProcessPaymentEvent(self, request, context):
         data_dto = PaymentMapper.grpc_event_to_dto(proto_message = request)
         res = await self._payment_handler.ProcessPaymentEvent(data = data_dto)
@@ -30,6 +32,7 @@ class gRPC_Payments_Server(payment_pb2_grpc.PaymentServiceServicer):
             ok = res
         )
         return response
+
 
     async def GetUserPaymentMethods(self, request, context):
         user_id = request.user_id
@@ -39,6 +42,7 @@ class gRPC_Payments_Server(payment_pb2_grpc.PaymentServiceServicer):
         )
         return response
     
+
     async def DeleteUserPaymentMethod(self, request, context):
         user_id, method_id = request.user_id, request.method_id
         res = await self._payment_handler.DeleteUserPaymentMethod(

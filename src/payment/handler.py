@@ -9,7 +9,7 @@ from src.core.db import DataBase
 from src.core.db.models.paymentmethod import PaymentMethodStatusEnum
 from src.core.config import settings
 
-from src.core.clients import booking_client
+from src.core.clients.booking import BookingClient
 
 from src.payment.exceptions import (
     NotPaymentMethodFoundException,
@@ -35,7 +35,7 @@ from src.payment.service import (
 
 
 class PaymentHandler:
-    def __init__(self, db: DataBase, yookassa_client: YooKassa):
+    def __init__(self, db: DataBase, yookassa_client: YooKassa, booking_client: BookingClient):
         self._db = db
         self._yookassa_client = yookassa_client
         self._booking_client = booking_client

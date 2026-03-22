@@ -7,6 +7,8 @@ from kirt08_contracts.payment import payment_pb2_grpc
 from kirt08_contracts.refund import refund_pb2_grpc
 
 from src.core.config import settings
+from src.core.clients.booking import BookingClient
+
 from src.core.grpc.payments import gRPC_Payments_Server
 from src.core.grpc.refund import gRPC_Refund_Server
 
@@ -17,18 +19,23 @@ log = logging.getLogger(__name__)
 async def serve(yookassa_client: YooKassa):
     log.info("Server starting up...")
 
+    booking_url = settings.grpc.booking_client.host + ":" + settings.grpc.booking_client.port
+    booking_client = BookingClient(host = booking_url)
+
     server = grpc.aio.server()
 
     payment_pb2_grpc.add_PaymentServiceServicer_to_server(
         servicer = gRPC_Payments_Server(
-            yookassa_client = yookassa_client
+            yookassa_client = yookassa_client,
+            booking_client = booking_client
         ),
         server = server 
     )
 
     refund_pb2_grpc.add_RefundServiceServicer_to_server(
         servicer = gRPC_Refund_Server(
-            yookassa_client = yookassa_client
+            yookassa_client = yookassa_client,
+            booking_client = booking_client
         ),
         server = server
     )

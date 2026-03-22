@@ -41,5 +41,5 @@ class RefundDataBaseWithRel(RefundDataBase):
 # GRPC
 class CreateReservationResponse(BaseModel):
     order_id: str
-    tickets_id: list[str]
+    ticket_ids: list[str]
     amount: int

@@ -26,6 +26,6 @@ class BookingMapper:
     def creation_grpc_to_dto(cls, request: booking_pb2.CreateReservationResponse) -> CreateReservationResponse:
         return CreateReservationResponse(
             order_id = request.order_id,
-            tickets_id = request.tickets_id,
+            ticket_ids = request.ticket_ids,
             amount = request.amount 
         )
