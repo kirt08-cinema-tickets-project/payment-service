@@ -13,9 +13,10 @@ class PaymentDataBase(BaseModel):
     id: UUID | str
     amount: int
     status: PaymentStatus
-    provider_id: str | None
-    payment_metadata: str | None
+    provider_id: str | None = None
+    payment_metadata: str | None = None
     user_id: str
+    booking_id: str
    
 
 class PaymentDataBaseWithRel(PaymentDataBase):
@@ -36,3 +37,9 @@ class RefundDataBase(BaseModel):
 
 class RefundDataBaseWithRel(RefundDataBase):
     payment_rel: PaymentDataBase | None = None
+
+# GRPC
+class CreateReservationResponse(BaseModel):
+    order_id: str
+    tickets_id: list[str]
+    amount: int

@@ -678,14 +678,14 @@ all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2
 
 [[package]]
 name = "kirt08-contracts"
-version = "0.5.1"
+version = "0.6.0"
 description = ""
 optional = false
 python-versions = "<3.13,>=3.12"
 groups = ["main"]
 files = [
-    {file = "kirt08_contracts-0.5.1-py3-none-any.whl", hash = "sha256:9f41bf44d1ad21975d903972be62daedb90269dd74bfd832dbe9709b64d4c19c"},
-    {file = "kirt08_contracts-0.5.1.tar.gz", hash = "sha256:35e3464eb246321b9f0dd5969c68bec5df85f14df628b25b7f7d305cbd13cf01"},
+    {file = "kirt08_contracts-0.6.0-py3-none-any.whl", hash = "sha256:2fdfbe77a7a0dd7c18af2c38f3e644b049c8516b8fac360d6bdd59fe183c46e4"},
+    {file = "kirt08_contracts-0.6.0.tar.gz", hash = "sha256:970752c25640e483e9531a8da744d6aa250e7ed0e8bdd58d182cf9fb5a14e1d9"},
 ]
 
 [package.dependencies]
@@ -1612,4 +1612,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12, <3.13"
-content-hash = "18261533e2e8cc9074e0120a7afeadd639f74a1b45be4e9e4fc48a122a83520e"
+content-hash = "e07a58db8a0e88109190ab0aa8206362b02d1236d918c6f16886ed1513b8bd64"

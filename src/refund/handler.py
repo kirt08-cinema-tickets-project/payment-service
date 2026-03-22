@@ -3,6 +3,8 @@ from aioyookassa.types import CreateRefundParams, Currency, Money
 
 from src.core.db import DataBase
 
+from src.core.clients import booking_client
+
 from src.payment.exceptions import (
     PaymentNotFoundException,
 )
@@ -27,6 +29,7 @@ class RefundHandler:
     def __init__(self, db: DataBase, yookassa_client: YooKassa):
         self._db = db
         self._yookassa_client = yookassa_client
+        self._booking_client = booking_client
 
 
     async def CreateRefundRequest(self, booking_id: str, user_id: str):
@@ -84,6 +87,11 @@ class RefundHandler:
                 async with self._db.session() as session:
                     await service_mark_refund_success(id = refund.id, session = session)
                     await service_mark_payment_refunded(payment_id = refund.payment_id, session = session)
+
+                    await self._booking_client.CancelBooking(
+                        booking_id = refund.payment_rel.booking_id,
+                        user_id = refund.payment_rel.user_id
+                    )
 
                     return True
             except Exception as e:

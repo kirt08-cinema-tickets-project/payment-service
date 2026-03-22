@@ -9,6 +9,8 @@ from src.core.db import DataBase
 from src.core.db.models.paymentmethod import PaymentMethodStatusEnum
 from src.core.config import settings
 
+from src.core.clients import booking_client
+
 from src.payment.exceptions import (
     NotPaymentMethodFoundException,
 )
@@ -36,13 +38,20 @@ class PaymentHandler:
     def __init__(self, db: DataBase, yookassa_client: YooKassa):
         self._db = db
         self._yookassa_client = yookassa_client
+        self._booking_client = booking_client
 
     async def CreatePayment(self, data: CreatePaymentRequestDTO):
+        reservation = await self._booking_client.CreateReservation(
+            user_id = data.user_id,
+            screening_id = data.screening_id,
+            seats = data.seats
+        )
+
         async with self._db.session() as session:
             transaction = await service_create_payment(
-                amount = 1000,
+                amount = reservation.amount,
                 user_id = data.user_id,
-                booking_id="123456",
+                booking_id = reservation.order_id,
                 session = session 
             )
 
@@ -67,7 +76,7 @@ class PaymentHandler:
             metadata = {
                 "payment_id": str(transaction.id),
                 "user_id": str(data.user_id),
-                "booking_id": "123456"
+                "booking_id": reservation.order_id
             }
         )
 
@@ -128,6 +137,13 @@ class PaymentHandler:
                         ),
                         session = session
                     )
+            try:
+                await self._booking_client.ConfirmBooking(
+                    booking_id = data.booking_id,
+                    user_id = data.user_id
+                )
+            except Exception as e:
+                print(str(e))
 
         
         if data.event == "payment.canceled":

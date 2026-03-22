@@ -8,5 +8,9 @@ class BaseGRPC(BaseModel):
 class ServerConfig(BaseGRPC):
     ...
 
+class ClientConfig(BaseGRPC):
+    ...
+
 class GrpcConfig(BaseModel):
     server: ServerConfig = ServerConfig()
+    booking_client: ClientConfig = ClientConfig()
